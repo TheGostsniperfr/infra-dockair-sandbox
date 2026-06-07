@@ -26,6 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
       - name: Setup Terraform & Terragrunt
         uses: autero1/action-terragrunt@v1.3.0
         with:
@@ -79,6 +85,12 @@ jobs:
             kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
       - name: Setup Terraform & Terragrunt
         uses: autero1/action-terragrunt@v1.3.0
         with:
@@ -107,6 +119,12 @@ jobs:
             kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
             kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
 
       - name: Setup Terraform & Terragrunt
         uses: autero1/action-terragrunt@v1.3.0
@@ -140,6 +158,12 @@ jobs:
             kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
       - name: Setup Terraform & Terragrunt
         uses: autero1/action-terragrunt@v1.3.0
         with:
@@ -171,6 +195,12 @@ jobs:
             kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
             kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
 
       - name: Setup Terraform & Terragrunt
         uses: autero1/action-terragrunt@v1.3.0
