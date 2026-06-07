@@ -84,6 +84,8 @@ jobs:
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
             kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci aws_access_key_id | AWS_ACCESS_KEY_ID ;
+            kvv2/data/dockair-sandbox/ci aws_secret_access_key | AWS_SECRET_ACCESS_KEY ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -119,6 +121,8 @@ jobs:
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
             kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci aws_access_key_id | AWS_ACCESS_KEY_ID ;
+            kvv2/data/dockair-sandbox/ci aws_secret_access_key | AWS_SECRET_ACCESS_KEY ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -157,6 +161,8 @@ jobs:
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
             kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci aws_access_key_id | AWS_ACCESS_KEY_ID ;
+            kvv2/data/dockair-sandbox/ci aws_secret_access_key | AWS_SECRET_ACCESS_KEY ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -195,6 +201,8 @@ jobs:
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
             kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
             kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci aws_access_key_id | AWS_ACCESS_KEY_ID ;
+            kvv2/data/dockair-sandbox/ci aws_secret_access_key | AWS_SECRET_ACCESS_KEY ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
