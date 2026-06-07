@@ -80,10 +80,10 @@ jobs:
           role: github-actions-dockair
           method: jwt
           secrets: |
-            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
-            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
-            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
-            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -115,10 +115,10 @@ jobs:
           role: github-actions-dockair
           method: jwt
           secrets: |
-            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
-            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
-            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
-            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -153,10 +153,10 @@ jobs:
           role: github-actions-dockair
           method: jwt
           secrets: |
-            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
-            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
-            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
-            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -191,10 +191,10 @@ jobs:
           role: github-actions-dockair
           method: jwt
           secrets: |
-            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
-            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
-            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
-            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+            kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/data/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/data/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
