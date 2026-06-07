@@ -1,0 +1,60 @@
+name: "Terragrunt CI/CD Pipeline"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: "Lint & Validate"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.7"
+
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.3.0
+        with:
+          terragrunt_version: "0.50.0"
+
+      - name: Terragrunt Format Check
+        run: terragrunt hclfmt -check
+
+  plan:
+    name: "Terragrunt Plan"
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Note: You will need to configure your HashiCorp Vault OIDC integration here
+      # to dynamically retrieve your OpenStack credentials.
+      - name: Run Terragrunt Plan (Staging & Prod)
+        run: |
+          echo "Running plan for all environments..."
+          # terragrunt run-all plan --terragrunt-non-interactive
+
+  apply:
+    name: "Terragrunt Apply"
+    needs: plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Add manual approval gates or run staging automatically and gate production
+      - name: Run Terragrunt Apply
+        run: |
+          echo "Applying infrastructure changes..."
+          # terragrunt run-all apply --terragrunt-non-interactive
