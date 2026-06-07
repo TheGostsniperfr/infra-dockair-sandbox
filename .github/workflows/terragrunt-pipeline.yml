@@ -79,7 +79,6 @@ jobs:
           url: ${{ env.VAULT_ADDR }}
           role: github-actions-dockair
           method: jwt
-          jwtGithubAudience: "https://github.com/3-Istor"
           secrets: |
             kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
@@ -115,7 +114,6 @@ jobs:
           url: ${{ env.VAULT_ADDR }}
           role: github-actions-dockair
           method: jwt
-          jwtGithubAudience: "https://github.com/3-Istor"
           secrets: |
             kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
@@ -154,7 +152,6 @@ jobs:
           url: ${{ env.VAULT_ADDR }}
           role: github-actions-dockair
           method: jwt
-          jwtGithubAudience: "https://github.com/3-Istor"
           secrets: |
             kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
@@ -193,7 +190,6 @@ jobs:
           url: ${{ env.VAULT_ADDR }}
           role: github-actions-dockair
           method: jwt
-          jwtGithubAudience: "https://github.com/3-Istor"
           secrets: |
             kvv2/data/dockair-sandbox/ci os_username | OS_USERNAME ;
             kvv2/data/dockair-sandbox/ci os_password | OS_PASSWORD ;
