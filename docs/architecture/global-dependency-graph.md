@@ -106,5 +106,5 @@ Terragrunt automates this DAG using local dependency blocks inside `live/_env/*.
   ```
 - **To deploy the entire tree**:
   ```bash
-  terragrunt run --all apply --non-interactive --terragrunt-include-external-dependencies
+  terragrunt run --all --non-interactive --queue-include-external -- apply
   ```

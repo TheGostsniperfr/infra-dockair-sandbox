@@ -43,7 +43,7 @@ terragrunt run --all plan --non-interactive
 ### Automated All-in-One Apply
 To deploy the entire environment:
 ```bash
-terragrunt run --all apply --non-interactive --terragrunt-include-external-dependencies
+terragrunt run --all --non-interactive --queue-include-external -- apply
 ```
 
 ### Targeted Execution

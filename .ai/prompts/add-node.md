@@ -25,7 +25,7 @@ Scale the worker node count in the specified environment (`staging` or `prod`).
    Open [staging/talos-config/terragrunt.hcl](file:///live/staging/talos-config/terragrunt.hcl) or [prod/talos-config/terragrunt.hcl](file:///live/prod/talos-config/terragrunt.hcl) and update `worker_count = <target_count>` to keep the Talos PKI generation settings synchronized.
 4. **HCL Validation**:
    Run format checks:
-   `terragrunt hclfmt --terragrunt-check`
+   `terragrunt hcl fmt --check`
 5. **Validation Dry-Run**:
    Run planning verification:
    `terragrunt run --all plan --non-interactive`

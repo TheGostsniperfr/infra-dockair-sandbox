@@ -99,7 +99,7 @@ jobs:
 
       - name: Terragrunt Plan
         working-directory: live/staging
-        run: terragrunt run-all plan --terragrunt-non-interactive -out=tfplan
+        run: terragrunt run --all --non-interactive -- plan -out=tfplan
 
   plan-prod:
     name: "Terragrunt Plan - Production"
@@ -134,7 +134,7 @@ jobs:
 
       - name: Terragrunt Plan
         working-directory: live/prod
-        run: terragrunt run-all plan --terragrunt-non-interactive -out=tfplan
+        run: terragrunt run --all --non-interactive -- plan -out=tfplan
 
   deploy-staging:
     name: "Terragrunt Apply - Staging"
@@ -172,7 +172,7 @@ jobs:
 
       - name: Terragrunt Apply
         working-directory: live/staging
-        run: terragrunt run-all apply --terragrunt-non-interactive --terragrunt-include-external-dependencies
+        run: terragrunt run --all --non-interactive --queue-include-external -- apply
 
   deploy-prod:
     name: "Terragrunt Apply - Production"
@@ -210,4 +210,4 @@ jobs:
 
       - name: Terragrunt Apply
         working-directory: live/prod
-        run: terragrunt run-all apply --terragrunt-non-interactive --terragrunt-include-external-dependencies
+        run: terragrunt run --all --non-interactive --queue-include-external -- apply

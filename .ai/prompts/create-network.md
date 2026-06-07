@@ -29,7 +29,7 @@ Configure new IP subnets for OpenStack VPC router interfaces and Kubernetes pod/
 3. **Verify IPAM Boundaries**:
    Confirm that the new subnets do not overlap with any other environment CIDR blocks to maintain security isolation.
 4. **HCL Validation**:
-   `terragrunt hclfmt --terragrunt-check`
+   `terragrunt hcl fmt --check`
 5. **Dry-Run Plan**:
    `terragrunt run --all plan --non-interactive`
 

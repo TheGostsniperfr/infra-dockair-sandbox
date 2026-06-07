@@ -31,7 +31,7 @@ Upgrade the Talos version and OpenStack Glance image reference globally.
    }
    ```
 4. **HCL Validation**:
-   `terragrunt hclfmt --terragrunt-check`
+   `terragrunt hcl fmt --check`
 5. **Dry-Run Plan**:
    `terragrunt run --all plan --non-interactive`
 
