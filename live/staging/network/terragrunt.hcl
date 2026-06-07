@@ -1,1 +1,11 @@
-internal_cidr = "10.20.1.0/24"
+################################# PARENT INCLUDES ##############################
+
+include "root" {
+  path = find_in_parent_folders("root.hcl")
+}
+
+include "env" {
+  path = "${dirname(find_in_parent_folders("root.hcl"))}/_env/network.hcl"
+}
+
+################################################################################

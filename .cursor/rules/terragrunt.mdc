@@ -1,0 +1,38 @@
+---
+description: Enforce Terragrunt dependency handling, comment formatting, lockfile policy, and HCL conventions
+globs: ["**/*.hcl"]
+alwaysApply: true
+---
+
+# Terragrunt Best Practices
+
+## Dependency Management
+* Prefer using Terragrunt `dependency` blocks to retrieve output variables from other modules instead of hardcoding values or duplicating state data.
+* Every `dependency` block must include a `mock_outputs` section and define `mock_outputs_allowed_terraform_commands = ["validate", "plan"]` to prevent execution failures during clean bootstrapping validation.
+
+## Formatting & Commentary Conventions
+Strictly apply the following formatting rules:
+1. **Separators**: Use block headers for sections (e.g., `PARENT INCLUDES`, `LOCAL VARIABLES`, `INPUTS`, `DEPENDENCIES`).
+   * Top line: `############################# <TITLE> ##############################`
+   * Bottom line: `################################################################################`
+2. **Commentary**: Explain **why** (rationale, mocks, variables loading), not **what**. Remove obvious comments.
+3. **Spacing**: Place exactly one blank line (`\n`) between the comment block and the code block.
+
+### Example:
+```hcl
+################################# DEPENDENCIES #################################
+# Inject mock values during plan/validate to bypass missing state on bootstrapping.
+
+dependency "network" {
+  config_path                             = "${get_terragrunt_dir()}/../network"
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
+  mock_outputs = {
+    internal_net_id = "mock-net-id"
+  }
+}
+
+################################################################################
+```
+
+## Provider Version Lock
+Always verify that `copy_terraform_lock_file = true` is enabled in `live/root.hcl`'s `terraform` block. Do not modify or disable this setting.

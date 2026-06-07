@@ -43,8 +43,10 @@ data "talos_client_configuration" "cluster" {
   endpoints            = [var.lb_public_ip]
 }
 
-resource "vault_generic_secret" "talos_secrets" {
-  path = "kvv2/${var.project_name}/${var.env}/talos/cluster-secrets"
+resource "vault_kv_secret_v2" "talos_secrets" {
+  mount = "kvv2"
+  name  = "${var.project_name}/${var.env}/talos/cluster-secrets"
+
   data_json = jsonencode({
     cluster_name     = "${var.project_name}-${var.env}"
     cluster_endpoint = "https://${var.lb_public_ip}:6443"

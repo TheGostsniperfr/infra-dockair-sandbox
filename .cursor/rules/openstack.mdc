@@ -1,0 +1,21 @@
+---
+description: Rules for OpenStack compute flavors, load balancers, and subnet mappings
+globs: ["**/network/**", "**/compute/**", "**/load-balancer/**", "**/*.tf"]
+alwaysApply: true
+---
+
+# OpenStack Resource Rules
+
+## IPAM & Subnetting
+* Do not overlap CIDR blocks across environments. Ensure staging is strictly isolated in `10.20.0.0/16` and production in `10.10.0.0/16`.
+* Ensure router interfaces and gateways match the VPC network configurations.
+
+## Load Balancers & Ports
+* The API Load Balancer must configure listeners for:
+  * Port `6443` (Kubernetes API)
+  * Port `50000` (Talos Management API)
+* Add control plane node IPs dynamically to LB pools.
+
+## Compute VM Instances
+* Align flavor profiles and CPU allocations according to the env variables block (`staging` uses minimal shapes, `prod` is scaled for workloads).
+* Ensure correct security groups are associated to control plane and worker nodes to allow API access and CNI communication.

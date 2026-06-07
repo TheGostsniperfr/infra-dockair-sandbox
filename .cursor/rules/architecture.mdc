@@ -1,0 +1,28 @@
+---
+description: Enforce repository-wide folder structures, DRY principles, and inheritance patterns
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Architecture Rules
+
+## Separation of Concerns
+This project is strictly divided into two layers:
+1. **Modules (`modules/`)**: Generic, parameterizable, stateless Terraform code.
+   * Do not hardcode environment settings, CIDRs, or flavors here.
+   * Write clean outputs to expose resources downstream.
+2. **Deployments (`live/`)**: Terragrunt environment configurations.
+   * Direct overrides (e.g., node counts, flavors) belong in environment-specific configurations.
+   * Common resource parameters belong in component templates (`_env/*.hcl`).
+
+## DRY Blueprint Inheritance
+* Leaf configs (`live/staging/network/terragrunt.hcl`, etc.) must inherit from common templates (`live/_env/network.hcl`, etc.) using named includes:
+  ```hcl
+  include "root" {
+    path = find_in_parent_folders("root.hcl")
+  }
+  include "env" {
+    path = "${dirname(find_in_parent_folders("root.hcl"))}/_env/<component>.hcl"
+  }
+  ```
+* Never duplicate standard parameters (like region or project identifiers) in leaf configs. Load them from `env.hcl` or `common.hcl` dynamically via local functions.

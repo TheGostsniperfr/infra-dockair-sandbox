@@ -80,10 +80,6 @@ resource "openstack_lb_member_v2" "talos_api_members" {
 
 ########################### FLOATING IP ASSOCIATION ############################
 
-variable "fip_address" {
-  type = string
-}
-
 resource "openstack_networking_floatingip_associate_v2" "lb_fip_assoc" {
   floating_ip = var.fip_address
   port_id     = openstack_lb_loadbalancer_v2.api_lb.vip_port_id

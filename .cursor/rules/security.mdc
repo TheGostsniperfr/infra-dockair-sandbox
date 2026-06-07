@@ -1,0 +1,17 @@
+---
+description: Enforce secrets management invariants, Vault integrations, and prevent committing private keys
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Security & Secrets Invariants
+
+## Zero-Commit Secrets Policy
+* **NEVER** write, generate, or suggest committing secrets to Git.
+* Generated private keys, certificates, kubeconfigs, and bootstrap tokens are considered highly sensitive.
+* Exclude local states and temporary files using `.gitignore`.
+
+## Vault Integration
+* Store generated keys and Talos configurations inside HashiCorp Vault using the `vault_generic_secret` resource.
+* Reference secret values in Terraform dynamically rather than hardcoding.
+* Mark sensitive Terraform outputs and variables with `sensitive = true` to mask them in command-line printouts.

@@ -1,0 +1,42 @@
+project:
+  name: dockair-sandbox-infra
+  type: infrastructure
+  description: OpenStack and Talos Kubernetes sandbox deployment managed via Terragrunt
+
+providers:
+  - openstack:
+      source: terraform-provider-openstack/openstack
+      version: "~> 3.4.0"
+  - vault:
+      source: hashicorp/vault
+      version: "~> 5.9.0"
+      address: https://vault.3istor.com/
+  - talos:
+      source: siderolabs/talos
+      version: "~> 0.11.0"
+
+environments:
+  - staging:
+      topology: 1 control plane node, 3 worker nodes
+      subnet: 10.20.0.0/16
+  - prod:
+      topology: 1 control plane node, 3 worker nodes
+      subnet: 10.10.0.0/16
+
+deployment_flow:
+  order:
+    - network: "Provisions private network, subnet, router, and floating IP"
+    - talos-config: "Generates Talos cluster configuration and encrypts secrets to Vault"
+    - compute: "Deploys VMs on OpenStack and triggers Talos installation boot"
+    - load-balancer: "Provisions Octavia load balancer to distribute control plane API traffic"
+    - cluster-bootstrap: "Orchestrates cluster etcd bootstrap API call"
+
+invariants:
+  dry_run_validation:
+    command: "terragrunt run --all plan --non-interactive"
+    mock_outputs: true
+  lockfile_tracking:
+    parameter: "copy_terraform_lock_file = true"
+    location: "live/root.hcl"
+  naming_convention:
+    format: "${project_name}-${env}-${component}"

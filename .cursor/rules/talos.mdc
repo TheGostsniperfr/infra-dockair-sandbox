@@ -1,0 +1,16 @@
+---
+description: Enforce Talos OS declarative configurations, configuration patches, and prevent manual cluster drift
+globs: ["**/talos-config/**", "**/cluster-bootstrap/**", "**/*.yaml", "**/*.yml"]
+alwaysApply: true
+---
+
+# Talos Linux Operations
+
+## Declarative Configuration
+* Talos OS nodes must be managed purely declaratively via machine configurations.
+* **NEVER** suggest manual CLI adjustments (e.g. `talosctl edit` or dynamic runtime modifications) that introduce drift from code files.
+
+## Patches & Customizations
+* Apply OS-level adjustments (such as DNS, label configurations, NTP, scheduling) as machine configuration patches under `modules/talos-config/patches/`.
+* When adding a new patch, document its purpose inside the YAML files and verify that it parses cleanly as standard Talos YAML syntax.
+* Control plane nodes should load patches dynamically. Ensure the allow-scheduling rules match the environment requirements (allow scheduling on control plane if worker count is zero).

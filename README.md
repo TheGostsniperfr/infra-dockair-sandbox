@@ -4,6 +4,11 @@ This repository manages the cloud infrastructure for the Dockair Sandbox environ
 
 ## 🧠 Architectural Overview
 
+For a detailed visual analysis of our infrastructure, please refer to the dedicated documentation:
+*   [Global Dependency Graph](docs/architecture/global-dependency-graph.md) — Orchestration DAG, module dependencies, and external systems integration.
+*   [Networking & Security](docs/architecture/networking-and-security.md) — OpenStack network topology, security groups port matrix, and Cilium CNI configurations.
+*   [Secrets Management](docs/architecture/secrets-management.md) — Cluster PKI lifecycle, HashiCorp Vault kvv2 storage, and talosconfig retrieval.
+
 This project is split into two logical layers:
 1. **`modules/`**: Contains pure, reusable, and parameterizable Terraform modules. These modules do not contain any hardcoded environment variables or state configurations.
 2. **`live/`**: Contains the Terragrunt configurations that instantiate the modules. It represents the concrete environments (`staging` and `prod`) and handles backend state management.
@@ -15,28 +20,28 @@ This project is split into two logical layers:
 │       └── terragrunt-pipeline.yml     # Automated CI/CD pipeline (Lint, Plan, Apply)
 │
 ├── live/                               # Terragrunt deployment layer
-│   ├── terragrunt.hcl                  # Root configuration (handles remote state generation & providers)
+│   ├── root.hcl                        # Root configuration (handles remote state generation & providers)
+│   ├── common.hcl                      # Shared global variables (Talos versions, image names, keypairs)
 │   │
 │   ├── _env/                           # Parent templates (DRY factorized configurations)
-│   │   ├── common.hcl                  # Shared global variables (Talos versions, image names)
 │   │   ├── network.hcl                 # Common template for the OpenStack VPC, Subnets & FIP
 │   │   ├── talos-config.hcl            # Common template for the Talos OS & secrets generation
 │   │   ├── compute.hcl                 # Common template for the VM instances & cluster bootstrap
 │   │   └── load-balancer.hcl           # Common template for the API Load Balancer
 │   │
 │   ├── staging/                        # Staging Environment
-│   │   ├── env.hcl                     # Staging variables (VM sizes, node count = 1)
+│   │   ├── env.hcl                     # Staging variables (VM sizes, CIDRs)
 │   │   ├── network/                    # Deploys staging VPC & reserves Floating IP
-│   │   ├── talos-config/               # Generates staging secrets & Vault integration
-│   │   ├── compute/                    # Deploys staging VMs & bootstraps cluster
+│   │   ├── talos-config/               # Deploys staging configs (1 CP, 3 workers)
+│   │   ├── compute/                    # Deploys staging VMs (1 CP, 3 workers)
 │   │   └── load-balancer/              # Deploys staging API Load Balancer
 │   │
 │   └── prod/                           # Production Environment
-│       ├── env.hcl                     # Production variables (VM sizes, node count = 3, HA)
+│       ├── env.hcl                     # Production variables (VM sizes, CIDRs)
 │       ├── network/                    # Deploys production VPC & reserves Floating IP
-│       ├── talos-config/               # Generates production secrets & Vault integration
-│       ├── compute/                    # Deploys production HA VMs & bootstraps cluster
-│       └── load-balancer/              # Deploys production HA API Load Balancer
+│       ├── talos-config/               # Deploys production configs (1 CP, 3 workers)
+│       ├── compute/                    # Deploys production VMs (1 CP, 3 workers)
+│       └── load-balancer/              # Deploys production API Load Balancer
 │
 └── modules/                            # Reusable raw Terraform code (No state)
     ├── network/                        # Manages private VPC, subnets, routing & FIP allocation
@@ -48,14 +53,17 @@ This project is split into two logical layers:
 
 ## 📁 Directory Purpose
 
-### `/live/terragrunt.hcl` (The Orchestrator)
-The root `terragrunt.hcl` file is evaluated globally. Its primary responsibility is to dynamically generate the remote state storage configuration (e.g., S3/Swift bucket) and the provider configurations (OpenStack, Vault, Talos) based on the running directory. This ensures each sub-component has an isolated state file.
+### `/live/root.hcl` (The Orchestrator)
+The root `root.hcl` file is evaluated globally. Its primary responsibility is to dynamically generate the remote state storage configuration (e.g., S3/Swift bucket) and the provider configurations (OpenStack, Vault, Talos) based on the running directory. This ensures each sub-component has an isolated state file.
+
+### `/live/common.hcl` (Global Settings)
+Contains shared settings like software versions (e.g., Talos version) and keypairs that remain consistent across both staging and production environments.
 
 ### `/live/_env/` (The Blueprints)
 This directory contains "parent" HCL files. Instead of repeating the source URL, inputs, and settings for each environment, we write the blueprint once here. The environments then inherit from these files.
 
 ### `/live/staging/` & `/live/prod/` (The Concrete Deployments)
-These directories represent the physical infrastructure. The `terragrunt.hcl` files inside them are almost empty; they inherit the configuration from `/live/_env/` and only override parameters specific to their environment (defined in `env.hcl`), such as the OpenStack VM flavors or the number of workers.
+These directories represent the physical infrastructure. The `terragrunt.hcl` files inside them inherit the configuration from `/live/_env/` and only override parameters specific to their environment (defined in `env.hcl` or explicitly as local inputs, such as the VM sizes). Both staging and production utilize a topology of 1 control plane node and 3 worker nodes.
 
 ### `/modules/` (The Engine)
 This is where the pure Terraform code lives.

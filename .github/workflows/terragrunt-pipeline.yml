@@ -1,60 +1,183 @@
-name: "Terragrunt CI/CD Pipeline"
+name: "Terragrunt CI/CD"
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+    branches: [main]
+    paths: ["live/**", "modules/**"]
+  push:
+    branches: [main]
+    paths: ["live/**", "modules/**"]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+env:
+  TF_VERSION: "1.15.3"
+  TG_VERSION: "1.0.4"
+  VAULT_ADDR: "https://vault.3istor.com"
+  OS_IDENTITY_API_VERSION: "3"
 
 jobs:
-  validate:
-    name: "Lint & Validate"
+  static-analysis:
+    name: "Static Analysis & Linting"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: "1.5.7"
-
-      - name: Setup Terragrunt
+      - name: Setup Terraform & Terragrunt
         uses: autero1/action-terragrunt@v1.3.0
         with:
-          terragrunt_version: "0.50.0"
+          terragrunt_version: ${{ env.TG_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Terragrunt Format Check
-        run: terragrunt hclfmt -check
+      - name: Check HCL Format
+        run: terragrunt hcl format --check
 
-  plan:
-    name: "Terragrunt Plan"
-    needs: validate
+      - name: Check Terraform Format
+        run: terraform fmt -check -recursive
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: v0.48.0
+
+      - name: Initialize TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint -f compact
+
+      - name: Run TFSec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          soft_fail: true
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          framework: terraform
+          soft_fail: true
+
+  plan-staging:
+    name: "Terragrunt Plan - Staging"
+    needs: static-analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Note: You will need to configure your HashiCorp Vault OIDC integration here
-      # to dynamically retrieve your OpenStack credentials.
-      - name: Run Terragrunt Plan (Staging & Prod)
-        run: |
-          echo "Running plan for all environments..."
-          # terragrunt run-all plan --terragrunt-non-interactive
+      - name: Import Secrets via Vault OIDC
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: github-actions-dockair
+          method: jwt
+          secrets: |
+            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
 
-  apply:
-    name: "Terragrunt Apply"
-    needs: plan
+      - name: Setup Terraform & Terragrunt
+        uses: autero1/action-terragrunt@v1.3.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terragrunt Plan
+        working-directory: live/staging
+        run: terragrunt run-all plan --terragrunt-non-interactive -out=tfplan
+
+  plan-prod:
+    name: "Terragrunt Plan - Production"
+    needs: static-analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Import Secrets via Vault OIDC
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: github-actions-dockair
+          method: jwt
+          secrets: |
+            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+
+      - name: Setup Terraform & Terragrunt
+        uses: autero1/action-terragrunt@v1.3.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terragrunt Plan
+        working-directory: live/prod
+        run: terragrunt run-all plan --terragrunt-non-interactive -out=tfplan
+
+  deploy-staging:
+    name: "Terragrunt Apply - Staging"
+    needs: [plan-staging, plan-prod]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: staging
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Add manual approval gates or run staging automatically and gate production
-      - name: Run Terragrunt Apply
-        run: |
-          echo "Applying infrastructure changes..."
-          # terragrunt run-all apply --terragrunt-non-interactive
+      - name: Import Secrets via Vault OIDC
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: github-actions-dockair
+          method: jwt
+          secrets: |
+            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+
+      - name: Setup Terraform & Terragrunt
+        uses: autero1/action-terragrunt@v1.3.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terragrunt Apply
+        working-directory: live/staging
+        run: terragrunt run-all apply --terragrunt-non-interactive --terragrunt-include-external-dependencies
+
+  deploy-prod:
+    name: "Terragrunt Apply - Production"
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Import Secrets via Vault OIDC
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ env.VAULT_ADDR }}
+          role: github-actions-dockair
+          method: jwt
+          secrets: |
+            kvv2/dockair-sandbox/ci os_username | OS_USERNAME ;
+            kvv2/dockair-sandbox/ci os_password | OS_PASSWORD ;
+            kvv2/dockair-sandbox/ci os_project_name | OS_PROJECT_NAME ;
+            kvv2/dockair-sandbox/ci os_auth_url | OS_AUTH_URL ;
+
+      - name: Setup Terraform & Terragrunt
+        uses: autero1/action-terragrunt@v1.3.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terragrunt Apply
+        working-directory: live/prod
+        run: terragrunt run-all apply --terragrunt-non-interactive --terragrunt-include-external-dependencies

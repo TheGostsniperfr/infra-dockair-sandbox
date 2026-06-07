@@ -1,0 +1,43 @@
+# Local Infrastructure Cache
+.terragrunt-cache/
+.terraform/
+
+# Terraform State Files (S3 Remote State is used instead)
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Override Files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local Variables (which may contain sensitive information)
+*.tfvars
+*.tfvars.json
+*.env
+.env.*
+
+# Generated files by Terragrunt
+backend.tf
+provider.tf
+
+# Log files
+*.log
+
+# OS / IDE specific files
+.DS_Store
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# CLI tooling
+.antigravitycli/
+
